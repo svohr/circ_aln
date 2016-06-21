@@ -5,8 +5,6 @@
 # and merges them with the reads that mapped to the original reference.
 
 
-src_dir=$(dirname $0)
-
 ref=$1
 fastq=$2
 prefix=$3
@@ -22,7 +20,7 @@ samtools index ${prefix}.circ.s.bam
 
 ref_len=$(grep '^>' -v ${ref} | tr -d '\n\t\r ' | wc -c)
 
-python ${src_dir}/fix_circ.py ${ref_len} ${prefix}.circ.s.bam \
+fix_circ ${ref_len} ${prefix}.circ.s.bam \
 | samtools sort -T ${prefix}.circ.fix -o ${prefix}.circ.fix.s.bam
 
 samtools merge -f ${prefix}.s.bam ${prefix}.circ.fix.s.bam ${prefix}.lin.s.bam

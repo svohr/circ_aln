@@ -6,6 +6,6 @@ Simple scripts for circularizing alignments to a linear reference
 ```
 circ_index mtDNA.fa
 
-circ_aln mtDNA.fa reads.fq reads.mtDNA.s
+circ_aln mtDNA.fa reads.fq reads.mtDNA
 ```
 

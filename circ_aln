@@ -12,18 +12,21 @@ prefix=$3
 
 bwa mem ${ref} ${fastq} \
 | samtools sort -T ${prefix}.lin -o ${prefix}.lin.s.bam -
+samtools rmdup ${prefix}.lin.s.bam ${prefix}.lin.s.rd.bam
 
 bwa mem ${ref}.circ.fa ${fastq} \
 | samtools sort -T ${prefix}.circ -o ${prefix}.circ.s.bam -
+samtools rmdup ${prefix}.circ.s.bam ${prefix}.circ.s.rd.bam
 
-samtools index ${prefix}.circ.s.bam
+samtools index ${prefix}.circ.s.rd.bam
 
 ref_len=$(grep '^>' -v ${ref} | tr -d '\n\t\r ' | wc -c)
 
-circ_fix ${ref_len} ${prefix}.circ.s.bam \
-| samtools sort -T ${prefix}.circ.fix -o ${prefix}.circ.fix.s.bam
+circ_fix ${ref_len} ${prefix}.circ.s.rd.bam \
+| samtools sort -T ${prefix}.circ.s.rd.fix -o ${prefix}.circ.s.rd.fix.s.bam
 
-samtools merge -f ${prefix}.s.bam ${prefix}.lin.s.bam ${prefix}.circ.fix.s.bam
+samtools merge -f ${prefix}.s.bam ${prefix}.lin.s.rd.bam \
+                                  ${prefix}.circ.s.rd.fix.s.bam
 
 rm ${prefix}.circ* ${prefix}.lin*
 

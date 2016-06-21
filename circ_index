@@ -1,0 +1,16 @@
+#! /bin/sh
+#
+# Builds indexes for the original reference sequence and another reference
+# where sequence from the begining of the reference is appended to the end
+# of the reference.
+#
+
+fasta=$1
+
+bwa index ${fasta}
+
+# generate the circularized reference
+grep -v '^>' ${fasta} | head -c 500 | cat ${fasta} - > ${fasta}.circ.fa
+
+bwa index ${fasta}.circ.fa
+

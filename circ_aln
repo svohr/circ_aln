@@ -1,0 +1,32 @@
+#! /bin/sh
+#
+# Maps reads to the original reference and the circularized reference.
+# Splits the reads that span the end and start in the circularized reference
+# and merges them with the reads that mapped to the original reference.
+
+
+src_dir=$(dirname $0)
+
+ref=$1
+fastq=$2
+prefix=$3
+
+
+bwa mem ${ref} ${fastq} \
+| samtools sort -T ${prefix}.lin -o ${prefix}.lin.s.bam -
+
+bwa mem ${ref}.circ.fa ${fastq} \
+| samtools sort -T ${prefix}.circ -o ${prefix}.circ.s.bam -
+
+samtools index ${prefix}.circ.s.bam
+
+ref_len=$(grep '^>' -v ${ref} | tr -d '\n\t\r ' | wc -c)
+
+python ${src_dir}/fix_circ.py ${ref_len} ${prefix}.circ.s.bam \
+| samtools sort -T ${prefix}.circ.fix -o ${prefix}.circ.fix.s.bam
+
+samtools merge -f ${prefix}.s.bam ${prefix}.circ.fix.s.bam ${prefix}.lin.s.bam
+
+rm ${prefix}.circ* ${prefix}.lin*
+
+

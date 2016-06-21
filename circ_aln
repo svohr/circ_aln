@@ -20,7 +20,7 @@ samtools index ${prefix}.circ.s.bam
 
 ref_len=$(grep '^>' -v ${ref} | tr -d '\n\t\r ' | wc -c)
 
-fix_circ ${ref_len} ${prefix}.circ.s.bam \
+circ_fix ${ref_len} ${prefix}.circ.s.bam \
 | samtools sort -T ${prefix}.circ.fix -o ${prefix}.circ.fix.s.bam
 
 samtools merge -f ${prefix}.s.bam ${prefix}.circ.fix.s.bam ${prefix}.lin.s.bam

@@ -5,6 +5,11 @@
 # of the reference.
 #
 
+if [ $# -ne 1 ]; then
+    echo "usage: circ_index reference.fasta"
+    exit 1
+fi
+
 fasta=$1
 
 bwa index ${fasta}

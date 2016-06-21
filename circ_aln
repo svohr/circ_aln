@@ -5,6 +5,11 @@
 # and merges them with the reads that mapped to the original reference.
 
 
+if [ $# -ne 3 ]; then
+    echo "usage: circ_aln reference.fasta reads.fastq[.gz] prefix"
+    exit 1
+fi
+
 ref=$1
 fastq=$2
 prefix=$3

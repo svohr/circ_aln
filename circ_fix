@@ -29,7 +29,7 @@ def find_q_split_point(aln, junc):
               matched.
     """
     found = False
-    for qpos, rpos in aln.get_aligned_pairs():
+    for qpos, rpos in aln.get_aligned_pairs(matches_only=False):
         # Goes to the next matched qpos after the junction point.
         if rpos and int(rpos) == junc:
             found = True
@@ -100,15 +100,17 @@ def split_aln_cigar(aln, qpos):
     Splits the cigartuple of the alignment on the given query position
     """
     exploded_cig = explode_cigar(aln.cigartuples)
+    matches = 0
     i = 0
     for oper in exploded_cig:
         # If the operation is one that corresponds to a base in the query seq
-        if oper in [0, 1, 4, 7, 8]:
-            i += 1
-        if i == qpos:
+        if matches == qpos + 1:
             break
-    return (unexplode_cigar(exploded_cig[0:i]),
-            unexplode_cigar(exploded_cig[i:]))
+        if oper in [0, 1, 4, 7, 8]:
+            matches += 1
+        i += 1
+    return (unexplode_cigar(exploded_cig[0:i - 1]),
+            unexplode_cigar(exploded_cig[i - 1:]))
 
 
 def split_aln(aln, point):
@@ -167,11 +169,12 @@ def main():
     bamfile = pysam.AlignmentFile(args.bam_file, 'rb')
     ref_id = bamfile.references[0]
     with pysam.AlignmentFile('-', 'wb', template=bamfile) as outbam:
-       for aln in bamfile.fetch(ref_id, start=args.junction,
+        for aln in bamfile.fetch(ref_id, start=args.junction,
                                         end=args.junction + 1):
-           seg1, seg2 = split_aln(aln, args.junction)
-           outbam.write(seg1)
-           outbam.write(seg2)
+            if aln.reference_start <= args.junction:
+                seg1, seg2 = split_aln(aln, args.junction)
+                outbam.write(seg1)
+            outbam.write(seg2)
 
     return 0
 

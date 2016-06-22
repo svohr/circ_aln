@@ -14,7 +14,7 @@ ref=$1
 fastq=$2
 prefix=$3
 
-
+# Align reads to both reference sequences
 bwa mem ${ref} ${fastq} \
 | samtools sort -T ${prefix}.lin -o ${prefix}.lin.s.bam -
 samtools rmdup ${prefix}.lin.s.bam ${prefix}.lin.s.rd.bam
@@ -30,9 +30,20 @@ ref_len=$(grep '^>' -v ${ref} | tr -d '\n\t\r ' | wc -c)
 circ_fix ${ref_len} ${prefix}.circ.s.rd.bam \
 | samtools sort -T ${prefix}.circ.s.rd.fix -o ${prefix}.circ.s.rd.fix.s.bam
 
-samtools merge -f ${prefix}.s.bam ${prefix}.lin.s.rd.bam \
+
+# Remove any alignments for our split reads.
+samtools view ${prefix}.circ.s.rd.fix.s.bam \
+| cut -f 1 \
+> ${prefix}.split_qnames.txt
+
+samtools view -h ${prefix}.lin.s.rd.bam \
+| grep -v -F -f ${prefix}.split_qnames.txt \
+| samtools view -b - > ${prefix}.lin.s.rd.rmfix.bam
+
+
+# Merge the two files together
+samtools merge -f ${prefix}.s.bam ${prefix}.lin.s.rd.rmfix.bam \
                                   ${prefix}.circ.s.rd.fix.s.bam
 
-rm ${prefix}.circ* ${prefix}.lin*
-
-
+#Clean up...
+rm ${prefix}.circ* ${prefix}.lin* ${prefix}.split_qnames.txt

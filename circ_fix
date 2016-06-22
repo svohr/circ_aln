@@ -31,10 +31,11 @@ def find_q_split_point(aln, junc):
     found = False
     for qpos, rpos in aln.get_aligned_pairs():
         # Goes to the next matched qpos after the junction point.
-        if int(rpos) == junc:
+        if rpos and int(rpos) == junc:
             found = True
         if found and qpos and rpos:
             return int(qpos), int(rpos)
+
 
 def aln_copy(aln):
     """

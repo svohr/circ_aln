@@ -6,8 +6,8 @@
 #
 
 if [ $# -ne 1 ]; then
-    echo "usage: circ_index reference.fasta"
-    exit 1
+  echo "usage: circ_index reference.fasta"
+  exit 1
 fi
 
 fasta=$1

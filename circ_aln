@@ -6,8 +6,8 @@
 
 
 if [ $# -ne 3 ]; then
-    echo "usage: circ_aln reference.fasta reads.fastq[.gz] prefix"
-    exit 1
+  echo "usage: circ_aln reference.fasta reads.fastq[.gz] prefix"
+  exit 1
 fi
 
 ref=$1
@@ -17,11 +17,11 @@ prefix=$3
 # Align reads to both reference sequences
 bwa mem ${ref} ${fastq} \
 | samtools sort -T ${prefix}.lin -o ${prefix}.lin.s.bam -
-samtools rmdup ${prefix}.lin.s.bam ${prefix}.lin.s.rd.bam
+samtools rmdup -s ${prefix}.lin.s.bam ${prefix}.lin.s.rd.bam
 
 bwa mem ${ref}.circ.fa ${fastq} \
 | samtools sort -T ${prefix}.circ -o ${prefix}.circ.s.bam -
-samtools rmdup ${prefix}.circ.s.bam ${prefix}.circ.s.rd.bam
+samtools rmdup -s ${prefix}.circ.s.bam ${prefix}.circ.s.rd.bam
 
 samtools index ${prefix}.circ.s.rd.bam
 
@@ -42,8 +42,8 @@ samtools view -h ${prefix}.lin.s.rd.bam \
 
 
 # Merge the two files together
-samtools merge -f ${prefix}.s.bam ${prefix}.lin.s.rd.rmfix.bam \
-                                  ${prefix}.circ.s.rd.fix.s.bam
+samtools merge -f ${prefix}.bam ${prefix}.lin.s.rd.rmfix.bam \
+                                ${prefix}.circ.s.rd.fix.s.bam
 
 #Clean up...
 rm ${prefix}.circ* ${prefix}.lin* ${prefix}.split_qnames.txt

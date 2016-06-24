@@ -18,7 +18,7 @@ could be used in its place. The `circ_fix` script works well enough on human
 mtDNA sequences, but has not been tested extensively, especially in cases
 where indels and clipping span the end and start of the reference. The shell
 scripts included here (`circ_index` and `circ_aln`) are meant more as templates
-for how `circ_fix` can be used rather that general purpose scripts for all
+for how `circ_fix` can be used rather than general purpose scripts for all
 situations.
 
 

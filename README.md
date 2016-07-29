@@ -13,7 +13,7 @@ them into two segments at this point and moves the second half to the beginning
 of the sequence. These new segments are added to the alignments to the original
 (linear) reference, after removing any existing alignments for these reads.
 
-These scripts use `bwa mem` but any alignment tool that produces bam files
+These scripts use `bwa` but any alignment tool that produces bam files
 could be used in its place. The `circ_fix` script works well enough on human
 mtDNA sequences, but has not been tested extensively, especially in cases
 where indels and clipping span the end and start of the reference. The bash

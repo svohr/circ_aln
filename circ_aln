@@ -15,13 +15,19 @@ fastq=$2
 prefix=$3
 
 # Align reads to both reference sequences
-bwa mem ${ref} ${fastq} \
+bwa aln -t 2 ${ref} ${fastq} > ${prefix}.lin.sai
+bwa samse ${ref} ${prefix}.lin.sai ${fastq} \
+| samtools view -b - \
 | samtools sort -T ${prefix}.lin -o ${prefix}.lin.s.bam -
 samtools rmdup -s ${prefix}.lin.s.bam ${prefix}.lin.s.rd.bam
 
-bwa mem ${ref}.circ.fa ${fastq} \
+
+bwa aln -t 2 ${ref}.circ.fa ${fastq} > ${prefix}.circ.sai
+bwa samse ${ref}.circ.fa ${prefix}.circ.sai ${fastq} \
+| samtools view -b - \
 | samtools sort -T ${prefix}.circ -o ${prefix}.circ.s.bam -
 samtools rmdup -s ${prefix}.circ.s.bam ${prefix}.circ.s.rd.bam
+
 
 samtools index ${prefix}.circ.s.rd.bam
 
@@ -34,6 +40,7 @@ circ_fix ${ref_len} ${prefix}.circ.s.rd.bam \
 # Remove any alignments for our split reads.
 samtools view ${prefix}.circ.s.rd.fix.s.bam \
 | cut -f 1 \
+| sed 's/$/	/' \
 > ${prefix}.split_qnames.txt
 
 samtools view -h ${prefix}.lin.s.rd.bam \
